@@ -1,5 +1,7 @@
 import models.Line;
+import models.LineCanvas;
 import models.Point;
+import rasterizers.LineCanvasRasterizer;
 import rasterizers.LineRasterizerTrivial;
 import rasterizers.Rasterizer;
 import rasters.Raster;
@@ -7,17 +9,23 @@ import rasters.RasterBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.Serial;
+import java.util.ArrayList;
 
 public class App {
 
     private final JPanel panel;
     private final Raster raster;
     private MouseAdapter mouseAdapter;
+    private KeyAdapter keyAdapter;
     private Point point;
-    private Rasterizer rasterizer;
+    private LineCanvasRasterizer rasterizer;
+    private LineCanvas canvas;
+    private boolean controlMode = false;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new App(800, 600).start());
@@ -64,14 +72,15 @@ public class App {
         frame.pack();
         frame.setVisible(true);
 
-        rasterizer = new LineRasterizerTrivial(
-                Color.BLACK,
+        rasterizer = new LineCanvasRasterizer(
                 raster
         );
+        canvas = new LineCanvas(new ArrayList<>(), new ArrayList<>());
 
         createAdapters();
         panel.addMouseMotionListener(mouseAdapter);
         panel.addMouseListener(mouseAdapter);
+        panel.addKeyListener(keyAdapter);
 
         panel.requestFocus();
         panel.requestFocusInWindow();
@@ -89,14 +98,53 @@ public class App {
                 Point point2 = new Point(e.getX(), e.getY());
                 Line line = new Line(point, point2, Color.red);
 
-                rasterizer.rasterize(line);
+                raster.clear();
+
+                if (controlMode) {
+                    canvas.addDottedLine(line);
+                } else {
+                    canvas.add(line);
+                }
+
+                rasterizer.rasterizeCanvas(canvas);
 
                 panel.repaint();
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                Point point2 = new Point(e.getX(), e.getY());
+                Line line = new Line(point, point2, Color.red);
 
+                raster.clear();
+
+                rasterizer.rasterizeCanvas(canvas);
+
+                if (controlMode) {
+                    rasterizer.rasterizeDottedLine(line);
+                } else {
+                    rasterizer.rasterizeLine(line);
+                }
+
+                panel.repaint();
+            }
+        };
+
+        keyAdapter = new KeyAdapter() {
+            // TODO Klácesa C bude mazat vše uložené
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    controlMode = true;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    controlMode = false;
+                }
             }
         };
     }

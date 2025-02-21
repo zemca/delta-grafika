@@ -1,0 +1,17 @@
+## App
+
+Ctrl mode
+při zmáčknutí ctrl se zapne, při Release se vypne
+Pokud je Ctrl mode zapnutý, vykresluji čáru tečkovaně
+
+
+## Canvas
+
+musím přidat list tečkovaných čar
+
+
+## Dotted line rasterizer
+
+vytvořit
+
+

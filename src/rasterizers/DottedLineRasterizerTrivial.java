@@ -1,16 +1,17 @@
 package rasterizers;
 
 import models.Line;
+import models.LineCanvas;
 import rasters.Raster;
 
 import java.awt.*;
 import java.util.ArrayList;
 
-public class LineRasterizerTrivial implements Rasterizer {
+public class DottedLineRasterizerTrivial implements Rasterizer {
 
     private Raster raster;
 
-    public LineRasterizerTrivial(Raster raster) {
+    public DottedLineRasterizerTrivial(Raster raster) {
         this.raster = raster;
     }
 
@@ -25,7 +26,7 @@ public class LineRasterizerTrivial implements Rasterizer {
         float q = y1 - (k * x1);
 
         // TODO ošetřit mimo hranice rastru
-        // TODO ošetřit vykreslování VŠEMI SMĚRY (zkuste i úplně svyslou čáru)
+        // TODO ošetřit vykreslování VŠEMI SMĚRY
 
         if (Math.abs(k) < 1) {
             if (x1 > x2) {
@@ -34,7 +35,7 @@ public class LineRasterizerTrivial implements Rasterizer {
                 x2 = x;
             }
 
-            for (int x = x1; x <= x2; x++) {
+            for (int x = x1; x <= x2; x += 3) {
                 int y = Math.round(k * x + q);
 
                 raster.setPixel(x, y, line.getColor().getRGB());
@@ -46,7 +47,7 @@ public class LineRasterizerTrivial implements Rasterizer {
                 y2 = y;
             }
 
-            for (int y = y1; y < y2; y++) {
+            for (int y = y1; y < y2; y += 3) {
                 int x = Math.round((y - q) / k);
 
                 raster.setPixel(x, y, line.getColor().getRGB());
