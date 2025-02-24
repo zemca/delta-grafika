@@ -1,4 +1,5 @@
 import models.Line;
+import models.LineCanvas;
 import models.Point;
 import rasterizers.Rasterizer;
 import rasterizers.TrivialLineRasterizer;
@@ -7,9 +8,7 @@ import rasters.RasterBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.Serial;
 
 public class App {
@@ -17,8 +16,11 @@ public class App {
     private final JPanel panel;
     private final Raster raster;
     private MouseAdapter mouseAdapter;
+    private KeyAdapter keyAdapter;
     private Point point;
     private Rasterizer rasterizer;
+    private LineCanvas canvas;
+    private boolean ctrlMode = false;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new App(800, 600).start());
@@ -66,6 +68,7 @@ public class App {
         frame.setVisible(true);
 
         rasterizer = new TrivialLineRasterizer(raster);
+        canvas = new LineCanvas();
 
         createAdapters();
         panel.addMouseListener(mouseAdapter);
@@ -88,16 +91,48 @@ public class App {
 
                 Line line = new Line(point, point2, Color.cyan);
 
-                rasterizer.rasterize(line);
+                raster.clear();
+                canvas.addLine(line);
+
+                rasterizer.rasterizeArray(canvas.getLines());
 
                 panel.repaint();
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                Point point2 = new Point(e.getX(), e.getY());
 
+                Line line = new Line(point, point2, Color.cyan);
+
+                raster.clear();
+
+                rasterizer.rasterizeArray(canvas.getLines());
+                rasterizer.rasterize(line);
+
+                panel.repaint();
             }
         };
+        keyAdapter = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    ctrlMode = true;
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
+                    ctrlMode = false;
+                }
+            }
+        };
+        // Uložit invormaci, zda je line tečkovaná nebo ne (line, canvas)
+        // Vytvořit dotted line rasterizer
+        // vykreslovat vše jak by mělo vypadat
+
+
     }
 
 }

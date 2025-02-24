@@ -3,6 +3,8 @@ package rasterizers;
 import models.Line;
 import rasters.Raster;
 
+import java.util.ArrayList;
+
 public class TrivialLineRasterizer implements Rasterizer {
 
     private Raster raster;
@@ -51,4 +53,10 @@ public class TrivialLineRasterizer implements Rasterizer {
         }
     }
 
+    @Override
+    public void rasterizeArray(ArrayList<Line> lines) {
+        for (Line line : lines) {
+            rasterize(line);
+        }
+    }
 }
