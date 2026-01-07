@@ -1,3 +1,5 @@
+import Fillers.BasicFiller;
+import Fillers.Filler;
 import models.Line;
 import models.LineCanvas;
 import models.Point;
@@ -21,6 +23,7 @@ public class App {
     private Rasterizer rasterizer;
     private LineCanvas canvas;
     private boolean ctrlMode = false;
+    private Filler filler;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new App(800, 600).start());
@@ -69,6 +72,11 @@ public class App {
 
         rasterizer = new TrivialLineRasterizer(raster);
         canvas = new LineCanvas();
+        filler = new BasicFiller(raster);
+
+        JToolBar toolBar = new JToolBar();
+
+        panel.add(toolBar, BorderLayout.NORTH);
 
         createAdapters();
         panel.addMouseListener(mouseAdapter);
@@ -82,35 +90,46 @@ public class App {
         mouseAdapter = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                point = new Point(e.getX(), e.getY());
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    point = new Point(e.getX(), e.getY());
+                } else if (e.getButton() == MouseEvent.BUTTON3) {
+                    point = new Point(e.getX(), e.getY());
+
+                    filler.fill(point, Color.GREEN);
+                    panel.repaint();
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                Point point2 = new Point(e.getX(), e.getY());
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    Point point2 = new Point(e.getX(), e.getY());
 
-                Line line = new Line(point, point2, Color.cyan);
+                    Line line = new Line(point, point2, Color.cyan);
 
-                raster.clear();
-                canvas.addLine(line);
+                    raster.clear();
+                    canvas.addLine(line);
 
-                rasterizer.rasterizeArray(canvas.getLines());
+                    rasterizer.rasterizeArray(canvas.getLines());
 
-                panel.repaint();
+                    panel.repaint();
+                }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point point2 = new Point(e.getX(), e.getY());
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    Point point2 = new Point(e.getX(), e.getY());
 
-                Line line = new Line(point, point2, Color.cyan);
+                    Line line = new Line(point, point2, Color.cyan);
 
-                raster.clear();
+                    raster.clear();
 
-                rasterizer.rasterizeArray(canvas.getLines());
-                rasterizer.rasterize(line);
+                    rasterizer.rasterizeArray(canvas.getLines());
+                    rasterizer.rasterize(line);
 
-                panel.repaint();
+                    panel.repaint();
+                }
             }
         };
         keyAdapter = new KeyAdapter() {
