@@ -33,7 +33,7 @@ public class App {
 
         frame.setLayout(new BorderLayout());
 
-        frame.setTitle("UHK FIM PGRF : " + this.getClass().getName());
+        frame.setTitle("Delta : " + this.getClass().getName());
         frame.setResizable(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
